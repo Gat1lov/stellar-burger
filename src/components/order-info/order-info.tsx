@@ -1,20 +1,32 @@
-import { FC, useMemo } from 'react';
+import { FC, useMemo, useEffect } from 'react';
 import { OrderInfoUI } from '../ui/order-info';
 import { TIngredient } from '@utils-types';
 import { Preloader } from '../ui/preloader';
 import { useParams } from 'react-router-dom';
 
-import { useSelector } from '../../services/store';
+import { useDispatch, useSelector } from '../../services/store';
 import { ingredientsSelectors } from '../../services/slices/ingredients/ingredientsSlice';
-import { feedSelector } from '../../services/slices/feed/feedSlice';
+import { ordersSelectors } from '../../services/slices/order/orderSlice';
+import { fetchOrderDetails, orderSelectors } from '../../services/slices/order/orderSlice';
 
 export const OrderInfo: FC = () => {
-  const feed = useSelector(feedSelector.orderState);
-  const { number } = useParams();
-  const ingredients: TIngredient[] = useSelector(
-    ingredientsSelectors.ingredientsState
+  const dispatch = useDispatch();
+  const { number } = useParams<{ number: string }>(); // Указываем, что number - строка
+  const ingredients: TIngredient[] = useSelector(ingredientsSelectors.ingredientsState);
+  const orderFromHistory = useSelector(ordersSelectors.ordersState).find(
+    (x) => x.number.toString() === number
   );
-  const orderData = feed.find((x) => x.number.toString() === number);
+  const orderFromDetails = useSelector(orderSelectors.dataState);
+  const loading = useSelector(orderSelectors.loadState);
+
+  useEffect(() => {
+    if (!orderFromHistory && number) {
+      // Преобразуем number в число и делаем запрос на сервер
+      dispatch(fetchOrderDetails(Number(number)));
+    }
+  }, [dispatch, orderFromHistory, number]);
+
+  const orderData = orderFromHistory || orderFromDetails;
 
   const orderInfo = useMemo(() => {
     if (!orderData || !ingredients.length) return null;
@@ -51,7 +63,7 @@ export const OrderInfo: FC = () => {
     };
   }, [orderData, ingredients]);
 
-  if (!orderInfo) {
+  if (loading || !orderInfo) {
     return <Preloader />;
   }
 

@@ -1,39 +1,32 @@
 import { TOrder } from '@utils-types';
-import { orderBurgerApi, getOrdersApi } from '@api';
+import { orderBurgerApi, getOrdersApi, getOrderByNumberApi } from '@api';
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
-//Интерфейс для состояния заказа
+// Интерфейс для состояния заказа
 export interface TOrderState {
   data: TOrder | null;
   loading: boolean;
 }
 
-//Определение начального состояния
+// Определение начального состояния
 const orderInitialState: TOrderState = {
   data: null,
   loading: false
 };
 
-//Интерфейс для состояния списка заказов
+// Интерфейс для состояния списка заказов
 export interface IOrdersState {
   orders: TOrder[];
   loading: boolean;
 }
 
-//Определение начального состояния
+// Определение начального состояния
 const ordersInitialState: IOrdersState = {
   orders: [],
   loading: false
 };
 
-export const ordBurger = createAsyncThunk(
-  `order/burger`,
-  async (orderData: string[]) => await orderBurgerApi(orderData)
-);
-
-export const ordList = createAsyncThunk(`orders/list`, getOrdersApi);
-
-//Слайс для заказа
+// Слайс для заказа
 const orderSlice = createSlice({
   name: 'order',
   initialState: orderInitialState,
@@ -59,7 +52,7 @@ const orderSlice = createSlice({
   }
 });
 
-//Слайс для списка заказов
+// Слайс для списка заказов
 const ordersSlice = createSlice({
   name: 'orders',
   initialState: ordersInitialState,
@@ -82,7 +75,26 @@ const ordersSlice = createSlice({
   reducers: {}
 });
 
-//Экспорт селекторов и действий
+// Создание асинхронных действий
+export const ordBurger = createAsyncThunk(
+  'order/burger',
+  async (data: string[]) => await orderBurgerApi(data)
+);
+
+export const ordList = createAsyncThunk('orders/list', getOrdersApi);
+
+export const fetchOrderDetails = createAsyncThunk(
+  'order/details',
+  async (orderNumber: number) => {
+    const response = await getOrderByNumberApi(orderNumber);
+    if (response.success) {
+      return response.orders[0];
+    }
+    throw new Error('Failed to fetch order details');
+  }
+);
+
+// Экспорт селекторов и действий
 export const orderSelectors = orderSlice.selectors;
 export const orderActions = orderSlice.actions;
 export const ordersSelectors = ordersSlice.selectors;

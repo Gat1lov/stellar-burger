@@ -72,12 +72,7 @@ export const refUser = createAsyncThunk(
 );
 
 //Обновление токена пользователя
-export const updUserTkn = createAsyncThunk('user/token', async () => {
-  const data = await refreshToken();
-  setCookie('accessToken', data.accessToken);
-  localStorage.setItem('refreshToken', data.refreshToken);
-  return data.accessToken;
-});
+export const updUserTkn = createAsyncThunk('user/token', refreshToken);
 
 //Слайс для управления состоянием пользователя
 export const userSlice = createSlice({

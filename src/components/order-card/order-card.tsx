@@ -4,7 +4,7 @@ import { TIngredient } from '@utils-types';
 
 import { OrderCardProps } from './type';
 import { OrderCardUI } from '../ui/order-card';
-import { useSelector } from 'react-redux';
+import { useSelector } from '../../services/store';
 import { ingredientsSelectors } from '../../services/slices/ingredients/ingredientsSlice';
 
 const maxIngredients = 6;

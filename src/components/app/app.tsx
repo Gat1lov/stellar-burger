@@ -41,19 +41,21 @@ const App = () => {
   const closeModal = () => navigate(-1);
 
   //Проверяем токен и обновляем
-  if (!accessTkn && refreshTkn) {
-    dispatch(updUserTkn());
-  }
+  useEffect(() => {
+    if (!accessTkn && refreshTkn) {
+      dispatch(updUserTkn());
+    }
+  }, [dispatch, accessTkn, refreshTkn]);
 
   //Валидация авторизации и самого пользователя
   useEffect(() => {
     dispatch(validUser()).finally(() => dispatch(userAction.authValidate()));
-  }, []);
+  }, [dispatch]);
 
   //Загружаем ингредиенты
   useEffect(() => {
     dispatch(getIngredients());
-  }, []);
+  }, [dispatch]);
 
   //Наводим марафет
   return (
