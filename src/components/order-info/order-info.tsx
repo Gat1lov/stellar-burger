@@ -7,12 +7,17 @@ import { useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from '../../services/store';
 import { ingredientsSelectors } from '../../services/slices/ingredients/ingredientsSlice';
 import { ordersSelectors } from '../../services/slices/order/orderSlice';
-import { fetchOrderDetails, orderSelectors } from '../../services/slices/order/orderSlice';
+import {
+  fetchOrderDetails,
+  orderSelectors
+} from '../../services/slices/order/orderSlice';
 
 export const OrderInfo: FC = () => {
   const dispatch = useDispatch();
-  const { number } = useParams<{ number: string }>(); // Указываем, что number - строка
-  const ingredients: TIngredient[] = useSelector(ingredientsSelectors.ingredientsState);
+  const { number } = useParams<{ number: string }>();
+  const ingredients: TIngredient[] = useSelector(
+    ingredientsSelectors.ingredientsState
+  );
   const orderFromHistory = useSelector(ordersSelectors.ordersState).find(
     (x) => x.number.toString() === number
   );
@@ -21,7 +26,6 @@ export const OrderInfo: FC = () => {
 
   useEffect(() => {
     if (!orderFromHistory && number) {
-      // Преобразуем number в число и делаем запрос на сервер
       dispatch(fetchOrderDetails(Number(number)));
     }
   }, [dispatch, orderFromHistory, number]);

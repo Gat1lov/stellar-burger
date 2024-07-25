@@ -122,8 +122,8 @@ export const userSlice = createSlice({
         if (action.payload) {
           state.data = null;
           state.auth = false;
+          state.loading = false;
         }
-        state.loading = false;
       })
       .addCase(logoutUser.rejected, (state) => {
         state.loading = false;

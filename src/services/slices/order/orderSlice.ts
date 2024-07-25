@@ -36,15 +36,15 @@ const orderSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(ordBurger.pending, (state) => {
+      .addCase(fetchOrderDetails.pending, (state) => {
         state.loading = true;
       })
-      .addCase(ordBurger.rejected, (state) => {
+      .addCase(fetchOrderDetails.rejected, (state) => {
         state.loading = false;
       })
-      .addCase(ordBurger.fulfilled, (state, action) => {
+      .addCase(fetchOrderDetails.fulfilled, (state, action) => {
         state.loading = false;
-        state.data = action.payload.order;
+        state.data = action.payload;
       });
   },
   reducers: {

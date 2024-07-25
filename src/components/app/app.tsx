@@ -43,7 +43,13 @@ const App = () => {
   //Проверяем токен и обновляем
   useEffect(() => {
     if (!accessTkn && refreshTkn) {
-      dispatch(updUserTkn());
+      dispatch(updUserTkn())
+        .unwrap()
+        .catch(() => {
+          dispatch(userAction.authValidate());
+        });
+    } else {
+      dispatch(userAction.authValidate());
     }
   }, [dispatch, accessTkn, refreshTkn]);
 
@@ -64,7 +70,48 @@ const App = () => {
       <Routes location={backgrountLocate || location}>
         <Route path='/' element={<ConstructorPage />} />
         <Route path='/feed' element={<Feed />} />
-        <Route path='*' element={<NotFound404 />} />
+        <Route
+          path='/feed/:number'
+          element={
+            <Modal title={'Информация о заказе'} onClose={closeModal}>
+              <OrderInfo />
+            </Modal>
+          }
+        />
+        <Route
+          path='/ingredients/:id'
+          element={
+            <Modal title={'Детали ингредиента'} onClose={closeModal}>
+              <IngredientDetails />
+            </Modal>
+          }
+        />
+        <Route
+          path='/profile'
+          element={
+            <ProtectedRoute>
+              <Profile />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path='/profile/orders'
+          element={
+            <ProtectedRoute>
+              <ProfileOrders />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path='/profile/orders/:number'
+          element={
+            <ProtectedRoute>
+              <Modal title={'Информация о заказе'} onClose={closeModal}>
+                <OrderInfo />
+              </Modal>
+            </ProtectedRoute>
+          }
+        />
         <Route
           path='/login'
           element={
@@ -97,22 +144,7 @@ const App = () => {
             </ProtectedRoute>
           }
         />
-        <Route
-          path='/profile'
-          element={
-            <ProtectedRoute>
-              <Profile />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path='/profile/orders'
-          element={
-            <ProtectedRoute>
-              <ProfileOrders />
-            </ProtectedRoute>
-          }
-        />
+        <Route path='*' element={<NotFound404 />} />
       </Routes>
       {backgrountLocate && (
         <Routes>
