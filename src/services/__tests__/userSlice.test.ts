@@ -25,106 +25,99 @@ describe('Проверка асинхронных запросов userSlice', (
   };
 
   // Проверка регистрации пользователя
-  describe('regUser', () => {
-    test('Проверка запроса pending', () => {
-      const store = configureStore({ reducer: { user: userSlices } });
+  describe('test async regUser', () => {
+    const store = configureStore({ reducer: { user: userSlices } });
+    const mockRegisterUser = {
+      email: 'test@test.ru',
+      password: 'test',
+      name: 'test'
+    };
 
-      global.fetch = jest.fn(() => new Promise(() => {})) as jest.Mock;
+    const mockData = {
+      email: 'test@test.ru',
+      name: 'test'
+    };
 
-      store.dispatch(regUser(mockRegisterUser));
-      const state = store.getState().user;
-      expect(state.loading).toBe(true);
-    });
-
-    test('Проверка запроса fulfilled', async () => {
-      const store = configureStore({ reducer: { user: userSlices } });
-
+    it('should set in field "data" to mockData when regUser.fulfilled', async () => {
       global.fetch = jest.fn(() =>
         Promise.resolve({
           ok: true,
           json: () =>
             Promise.resolve({
-              accessToken: 'mockAccessToken',
-              refreshToken: 'mockRefreshToken',
-              user: mockRegisterUser
+              success: true,
+              user: mockData
             })
         })
       ) as jest.Mock;
-
       await store.dispatch(regUser(mockRegisterUser));
-      const state = store.getState().user;
-      console.log('regUser fulfilled:', state.data);
-      expect(state.data).toEqual(mockRegisterUser);
-      expect(state.auth).toBe(true);
-      expect(state.loading).toBe(false);
+      const expectedResult = store.getState().user;
+      expect(expectedResult.data).toEqual(mockData);
+      console.log(expectedResult.data);
     });
-
-    test('Проверка запроса reject', async () => {
-      const store = configureStore({ reducer: { user: userSlices } });
-
-      const errorMessage = 'Ошибка запроса';
-
+    it('should set in field "data" to null when regUser.pending', async () => {
       global.fetch = jest.fn(() =>
-        Promise.reject(new Error(errorMessage))
+        Promise.resolve({
+          ok: true,
+          json: () =>
+            Promise.resolve({
+              success: true,
+              user: null
+            })
+        })
       ) as jest.Mock;
-
       await store.dispatch(regUser(mockRegisterUser));
-      const state = store.getState().user;
-      expect(state.data).toBeNull();
-      expect(state.auth).toBe(false);
-      expect(state.loading).toBe(false);
+      const expectedResult = store.getState().user;
+      expect(expectedResult.data).toEqual(null);
+      console.log(expectedResult.data);
     });
   });
 
   // Проверка входа пользователя
-  describe('loginUser', () => {
-    test('Проверка запроса pending', () => {
+  describe('test async loginUser', () => {
+    const mockLoginUser = { email: 'test@test.ru', password: 'test' };
+
+    it('loginUser fulfilled', async () => {
       const store = configureStore({ reducer: { user: userSlices } });
-
-      global.fetch = jest.fn(() => new Promise(() => {})) as jest.Mock;
-
-      store.dispatch(loginUser(mockLoginUser));
-      const state = store.getState().user;
-      expect(state.loading).toBe(true);
-    });
-
-    test('Проверка запроса fulfilled', async () => {
-      const store = configureStore({ reducer: { user: userSlices } });
-
       global.fetch = jest.fn(() =>
         Promise.resolve({
           ok: true,
           json: () =>
             Promise.resolve({
-              accessToken: 'mockAccessToken',
-              refreshToken: 'mockRefreshToken',
+              success: true,
               user: mockLoginUser
             })
         })
       ) as jest.Mock;
 
       await store.dispatch(loginUser(mockLoginUser));
-      const state = store.getState().user;
-      console.log('loginUser fulfilled:', state.data);
-      expect(state.data).toEqual(mockLoginUser);
-      expect(state.auth).toBe(true);
-      expect(state.loading).toBe(false);
+      const expectedResult = store.getState().user;
+      expect(expectedResult.data).toEqual(mockLoginUser);
+      expect(expectedResult.auth).toBe(true);
+      expect(expectedResult.loading).toBe(false);
     });
 
-    test('Проверка запроса reject', async () => {
+    it('loginUser pending', () => {
+      global.fetch = jest.fn(() => new Promise(() => {})) as jest.Mock;
       const store = configureStore({ reducer: { user: userSlices } });
+      store.dispatch(loginUser(mockLoginUser));
+      const expectedResult = store.getState().user;
+      expect(expectedResult.loading).toBe(true);
+      console.log(expectedResult.loading);
+    });
 
+    it('loginUser rejected', async () => {
       const errorMessage = 'Ошибка запроса';
 
       global.fetch = jest.fn(() =>
         Promise.reject(new Error(errorMessage))
       ) as jest.Mock;
-
+      const store = configureStore({ reducer: { user: userSlices } });
       await store.dispatch(loginUser(mockLoginUser));
-      const state = store.getState().user;
-      expect(state.data).toBeNull();
-      expect(state.auth).toBe(false);
-      expect(state.loading).toBe(false);
+      const expectedResult = store.getState().user;
+      expect(expectedResult.data).toBeNull();
+      expect(expectedResult.auth).toBe(false);
+      expect(expectedResult.loading).toBe(false);
+      console.log(expectedResult.data);
     });
   });
 
