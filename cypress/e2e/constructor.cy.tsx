@@ -1,14 +1,13 @@
 import Cypress from 'cypress';
 
-const notbaseUrl = 'https://norma.nomoreparties.space/api';
+const baseUrl = 'https://norma.nomoreparties.space/api';
 
 beforeEach(() => {
-    cy.intercept('GET', `${notbaseUrl}/ingredients`, { fixture: 'ingredients.json' });
-    cy.intercept('GET', `${notbaseUrl}/auth/user`, { fixture: 'user.json' });
-    cy.intercept('POST', `${notbaseUrl}/auth/login`, { fixture: 'user.json' });
-    cy.intercept('POST', `${notbaseUrl}/orders`, { fixture: 'order.json' });
+    cy.intercept('GET', `${baseUrl}/ingredients`, { fixture: 'ingredients.json' }).as('getIngredients');
+    cy.intercept('GET', `${baseUrl}/auth/user`, { fixture: 'user.json' });
+    cy.intercept('POST', `${baseUrl}/auth/login`, { fixture: 'user.json' });
+    cy.intercept('POST', `${baseUrl}/orders`, { fixture: 'order.json' }).as('postOrder');
 
-    // Установка состояния пользователя
     window.localStorage.setItem('refreshToken', JSON.stringify('refreshToken'));
     cy.setCookie('accessToken', 'accessToken');
     cy.visit('/');
@@ -19,8 +18,29 @@ afterEach(() => {
     window.localStorage.clear();
 });
 
-describe('Оформление заказа', () => {
-    it('Пользователь может оформить заказ', () => {
-        cy.get('[data-cy="ingredient"]');
+describe('Тестим работу ингридиентов', () => {
+    it('Добавление ингредиента из списка в конструктор', () => {
+        cy.get('[data-cy="643d69a5c3f7b9001cfa093c"]')
+            .children('button')
+            .contains('Добавить')
+            .click();
     });
+    it('Тестим модалку', () => {
+        cy.get('[data-cy="643d69a5c3f7b9001cfa093c"]').click();
+        cy.get('#modals').should('be.not.empty');
+        cy.get('#modals').find('button').click();
+    });
+});
+describe('Тестим заказ', () => {
+    it('Накидываем ингридиенты и и оформляем', () => {
+        cy.get('[data-cy="643d69a5c3f7b9001cfa093c"]')
+            .children('button')
+            .contains('Добавить')
+            .click();
+        cy.get(`[data-cy="643d69a5c3f7b9001cfa0941"]`)
+            .children('button')
+            .contains('Добавить')
+            .click();
+        cy.visit('/feed/49120');
+    })
 });
