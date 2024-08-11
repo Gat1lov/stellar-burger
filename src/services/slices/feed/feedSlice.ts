@@ -32,16 +32,16 @@ export const feedSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(getFeed.rejected, (state) => {
-        state.loading = false;
-      })
       .addCase(getFeed.pending, (state) => {
         state.loading = true;
       })
       .addCase(getFeed.fulfilled, (state, action) => {
-        state.orders = action.payload.orders;
-        state.total = action.payload.total;
-        state.today = action.payload.totalToday;
+        state.orders = action.payload.orders || [];
+        state.total = action.payload.total || 0;
+        state.today = action.payload.totalToday || 0;
+        state.loading = false;
+      })
+      .addCase(getFeed.rejected, (state) => {
         state.loading = false;
       });
   },

@@ -56,3 +56,4 @@ export const builderActions = builderSlice.actions;
 export const { addIngredient, moveIngredient, removeIngredient, resetBuild } =
   builderSlice.actions;
 export const builderSlices = builderSlice.reducer;
+export default builderSlices;

@@ -1,6 +1,6 @@
 import { FC, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { TConstructorIngredient } from '@utils-types';
+import { TConstructorIngredient, TIngredient } from '@utils-types';
 import { BurgerConstructorUI } from '@ui';
 
 import { useDispatch, useSelector } from '../../services/store';
@@ -22,7 +22,9 @@ export const BurgerConstructor: FC = () => {
   const orderModalData = useSelector(orderSelectors.dataState);
   const orderRequest = useSelector(orderSelectors.loadState);
   const constructorItems = useSelector(builderSelectors.getBuild);
-  const ingredientIds = constructorItems.ingredients.map((item) => item._id);
+  const ingredientIds = constructorItems.ingredients.map(
+    (item: TIngredient) => item._id
+  );
 
   const onOrderClick = () => {
     if (!user) {

@@ -27,7 +27,7 @@ const ordersInitialState: IOrdersState = {
 };
 
 // Слайс для заказа
-const orderSlice = createSlice({
+export const orderSlice = createSlice({
   name: 'order',
   initialState: orderInitialState,
   selectors: {
@@ -53,7 +53,7 @@ const orderSlice = createSlice({
 });
 
 // Слайс для списка заказов
-const ordersSlice = createSlice({
+export const ordersSlice = createSlice({
   name: 'orders',
   initialState: ordersInitialState,
   selectors: {
